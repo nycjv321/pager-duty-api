@@ -220,11 +220,11 @@ public class RestSynchronizationManager {
     }
 
     private DBObject findNote(BasicDBObject channel) {
-       BasicDBObject contentEquals = new BasicDBObject("content",
+        BasicDBObject contentEquals = new BasicDBObject("content",
                 new BasicDBObject("$eq", channel.getString("content"))
         );
         BasicDBObject summaryEquals = new BasicDBObject("summary",
-             new BasicDBObject("$eq", channel.getString("summary"))
+                new BasicDBObject("$eq", channel.getString("summary"))
         );
 
         BasicDBList list = new BasicDBList();
@@ -408,12 +408,12 @@ public class RestSynchronizationManager {
     }
 
     private void updateIncidentAssignedToUser(BasicDBObject incident) {
-        BasicDBObject service = (BasicDBObject) incident.get("assigned_to_user");
-        if (isNull(service)) {
+        BasicDBObject assignedToUser = (BasicDBObject) incident.get("assigned_to_user");
+        if (isNull(assignedToUser)) {
             return;
         }
         Object userId = db.getCollection("users").findOne(
-                new BasicDBObject("id", new BasicDBObject("$eq", service.getString("id")))
+                new BasicDBObject("id", new BasicDBObject("$eq", assignedToUser.getString("id")))
         ).get("_id");
         incident.remove("assigned_to_user");
         incident.put("assigned_to_user_id", userId);
