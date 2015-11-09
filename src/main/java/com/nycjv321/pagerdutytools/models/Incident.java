@@ -1,6 +1,8 @@
 package com.nycjv321.pagerdutytools.models;
 
-import com.nycjv321.pagerdutytools.MongoConnector;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
+import com.mongodb.BasicDBObject;
+import com.nycjv321.pagerdutytools.models.updater.Updater;
 import de.caluga.morphium.annotations.Entity;
 import de.caluga.morphium.annotations.Id;
 import de.caluga.morphium.annotations.Property;
@@ -12,7 +14,7 @@ import org.bson.types.ObjectId;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static com.nycjv321.pagerdutytools.MongoConnector.createQueryFor;
+import static com.nycjv321.pagerdutytools.utils.MongoConnector.createQueryFor;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
@@ -21,7 +23,7 @@ import static java.util.stream.Collectors.toSet;
  */
 @Entity(translateCamelCase = true, collectionName = "incidents")
 @Cache(maxEntries = 500)
-public class Incident implements Comparable<Incident> {
+public class Incident implements Comparable<Incident>, Updater {
 
     @Property(fieldName = "trigger_details_html_url")
     private String triggerDetailsHtmlURL;
@@ -70,6 +72,48 @@ public class Incident implements Comparable<Incident> {
 
     public static Incident find(ObjectId incidentId) {
         return createQueryFor(Incident.class).f("_id").eq(incidentId).get();
+    }
+
+    public static List<Incident> findByTeam(String team) {
+        ObjectId service = createQueryFor(Service.class).f("name").matches(getPattern(team)).get().getObjectId();
+        List<Incident> incidents = createQueryFor(Incident.class).f("service_id").eq(service).asList();
+        Collections.reverse(incidents);
+        return incidents;
+    }
+
+    public static List<Incident> find(String string) {
+        Set<Incident> incidents;
+        Query<Email> emailQuery = createQueryFor(Email.class).q();
+
+        incidents = emailQuery.or(
+                emailQuery.q().f("subject").matches(getPattern(string)),
+                emailQuery.q().f("body").matches(getPattern(string)),
+                emailQuery.q().f("summary").matches(getPattern(string)),
+                emailQuery.q().f("from").matches(getPattern(string)),
+                emailQuery.q().f("to").matches(getPattern(string))
+        ).asList().stream().map(Email::getIncident).collect(toSet());
+
+        Query<Note> query = createQueryFor(Note.class).q();
+
+        incidents.addAll(query.or(
+                query.q().f("content").matches(getPattern(string)),
+                query.q().f("summary").matches(getPattern(string))
+        ).asList().stream().map(Incident::findByNote).collect(toSet()));
+
+        List<Incident> incidentList = new ArrayList<>(incidents);
+        Collections.sort(incidentList);
+        Collections.reverse(incidentList);
+        return incidentList;
+    }
+
+    private static Incident findByNote(Note note) {
+        return MongoConnector.createQueryFor(LogEntry.class).f("note_id").eq(note.getObjectId()).get().getIncident();
+    }
+
+    public static List<Incident> find(int start, int end) {
+        List<Incident> incidents = createQueryFor(Incident.class).f("incident_number").gte(start).f("incident_number").lte(end).asList();
+        Collections.reverse(incidents);
+        return incidents;
     }
 
     public String getSummary() {
@@ -155,7 +199,12 @@ public class Incident implements Comparable<Incident> {
     }
 
     public String getTeam() {
-        return getService().getName();
+        final Service service = getService();
+        if (Objects.nonNull(service)) {
+            return service.getName();
+        } else {
+            return "No Team";
+        }
     }
 
     @Override
@@ -169,49 +218,17 @@ public class Incident implements Comparable<Incident> {
         }
     }
 
-    public static List<Incident> findByTeam(String team) {
-        ObjectId service = createQueryFor(Service.class).f("name").matches(getPattern(team)).get().getObjectId();
-        List<Incident> incidents = createQueryFor(Incident.class).f("service_id").eq(service).asList();
-        Collections.reverse(incidents);
-        return incidents;
-    }
-
-    public static List<Incident> find(String string) {
-        Set<Incident> incidents;
-        Query<Email> emailQuery = createQueryFor(Email.class).q();
-
-        incidents = emailQuery.or(
-                emailQuery.q().f("subject").matches(getPattern(string)),
-                emailQuery.q().f("body").matches(getPattern(string)),
-                emailQuery.q().f("summary").matches(getPattern(string)),
-                emailQuery.q().f("from").matches(getPattern(string)),
-                emailQuery.q().f("to").matches(getPattern(string))
-        ).asList().stream().map(Email::getIncident).collect(toSet());
-
-        Query<Note> query = createQueryFor(Note.class).q();
-
-        incidents.addAll(query.or(
-                query.q().f("content").matches(getPattern(string)),
-                query.q().f("summary").matches(getPattern(string))
-        ).asList().stream().map(Incident::findByNote).collect(toSet()));
-
-        List<Incident> incidentList = new ArrayList<>(incidents);
-        Collections.sort(incidentList);
-        Collections.reverse(incidentList);
-        return incidentList;
-    }
-
-    private static Incident findByNote(Note note) {
-        return MongoConnector.createQueryFor(LogEntry.class).f("note_id").eq(note.getObjectId()).get().getIncident();
-    }
-
-    public static List<Incident> find(int start, int end) {
-        List<Incident> incidents = createQueryFor(Incident.class).f("incident_number").gte(start).f("incident_number").lte(end).asList();
-        Collections.reverse(incidents);
-        return incidents;
-    }
-
     public ObjectId getObjectId() {
         return _id;
+    }
+
+    @Override
+    public boolean updates(BasicDBObject object) {
+        return false;
+    }
+
+    @Override
+    public void update(BasicDBObject object) {
+
     }
 }

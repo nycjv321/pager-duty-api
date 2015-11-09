@@ -1,4 +1,4 @@
-package com.nycjv321.pagerdutytools;
+package com.nycjv321.pagerdutytools.utils;
 
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;

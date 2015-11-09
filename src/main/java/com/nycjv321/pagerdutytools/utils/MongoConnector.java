@@ -1,9 +1,10 @@
-package com.nycjv321.pagerdutytools;
+package com.nycjv321.pagerdutytools.utils;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.nycjv321.pagerdutytools.Configuration;
 import de.caluga.morphium.Morphium;
 import de.caluga.morphium.MorphiumConfig;
 import de.caluga.morphium.MorphiumSingleton;
@@ -13,7 +14,7 @@ import java.net.UnknownHostException;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.nycjv321.pagerdutytools.MongoQueryFilters.*;
+import static com.nycjv321.pagerdutytools.utils.MongoQueryFilters.*;
 
 /**
  * Created by jvelasquez on 4/14/15.

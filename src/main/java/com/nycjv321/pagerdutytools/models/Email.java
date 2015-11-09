@@ -1,6 +1,6 @@
 package com.nycjv321.pagerdutytools.models;
 
-import com.nycjv321.pagerdutytools.MongoConnector;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import de.caluga.morphium.annotations.Entity;
 import de.caluga.morphium.annotations.Id;
 import de.caluga.morphium.annotations.caching.Cache;

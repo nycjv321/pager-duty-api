@@ -1,18 +1,20 @@
-package com.nycjv321.pagerdutytools;
+package com.nycjv321.pagerdutytools.models.queries;
 
 import com.google.common.collect.Lists;
 import com.nycjv321.pagerdutytools.models.User;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.nycjv321.pagerdutytools.utils.*;
 
 import java.util.*;
+import java.util.Collections;
 import java.util.regex.Pattern;
 
 /**
  * Created by jvelasquez on 4/26/15.
  */
-public class StaticQueries {
+public class IncidentQuery {
 
     public static List<DBObject> getTriggerCount() {
         DBCollection database = MongoConnector.getCollection("emails");

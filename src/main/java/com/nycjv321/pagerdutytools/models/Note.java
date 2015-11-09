@@ -7,7 +7,7 @@ import org.bson.types.ObjectId;
 
 import java.util.List;
 
-import static com.nycjv321.pagerdutytools.MongoConnector.createQueryFor;
+import static com.nycjv321.pagerdutytools.utils.MongoConnector.createQueryFor;
 
 /**
  * Created by jvelasquez on 4/15/15.

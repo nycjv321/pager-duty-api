@@ -1,6 +1,6 @@
 package com.nycjv321.pagerdutytools.models;
 
-import com.nycjv321.pagerdutytools.MongoConnector;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import de.caluga.morphium.annotations.Embedded;
 import de.caluga.morphium.annotations.Entity;
 import de.caluga.morphium.annotations.Id;
@@ -36,29 +36,6 @@ public class LogEntry {
 
     public Incident getIncident() {
         return Incident.find(incidentId);
-    }
-
-    /**
-     * @return All triggers group by user
-     */
-    public static Map<String, List<LogEntry>> getTriggersByUser() {
-        List<LogEntry> logEntries = MongoConnector.createQueryFor(LogEntry.class).
-                f("channel.from").exists().f("channel.to").ne(null).f("type").eq("trigger").asList();
-
-        Map<String, List<LogEntry>> triggersByUser = new HashMap<>();
-        for (LogEntry logEntry : logEntries) {
-            String from = logEntry.getChannel().getFrom();
-            if (triggersByUser.containsKey(from)) {
-                List<LogEntry> logEntryList = triggersByUser.get(from);
-                logEntryList.add(logEntry);
-                triggersByUser.put(from, logEntryList);
-            } else {
-                List<LogEntry> newEntry = new ArrayList<>();
-                newEntry.add(logEntry);
-                triggersByUser.put(logEntry.getChannel().getFrom(), newEntry);
-            }
-        }
-        return triggersByUser;
     }
 
     public String getId() {

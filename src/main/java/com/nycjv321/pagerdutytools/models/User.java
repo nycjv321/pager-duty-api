@@ -1,6 +1,6 @@
 package com.nycjv321.pagerdutytools.models;
 
-import com.nycjv321.pagerdutytools.MongoConnector;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
@@ -13,7 +13,7 @@ import org.bson.types.ObjectId;
 import java.util.List;
 import java.util.Objects;
 
-import static com.nycjv321.pagerdutytools.MongoConnector.createQueryFor;
+import static com.nycjv321.pagerdutytools.utils.MongoConnector.createQueryFor;
 
 /**
  * Created by jvelasquez on 4/16/15.
@@ -40,7 +40,6 @@ public class User {
 
     public static List<User> all() {
         return createQueryFor(User.class).asList();
-
     }
 
     public static User findByEmail(String email) {
