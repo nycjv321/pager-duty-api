@@ -3,13 +3,13 @@ package com.nycjv321.pagerdutytools.rest.processor;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.nycjv321.pagerdutytools.utils.Collections;
-import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
-import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import com.nycjv321.pagerdutytools.exceptions.UnResolvedIncidentsException;
 import com.nycjv321.pagerdutytools.models.Incident;
+import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
 import com.nycjv321.pagerdutytools.updater.IncidentUpdater;
 import com.nycjv321.pagerdutytools.updater.LogUpdater;
+import com.nycjv321.pagerdutytools.utils.Collections;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import org.apache.commons.lang3.RandomUtils;
 
 import static java.util.Objects.isNull;
@@ -60,7 +60,7 @@ public class IncidentProcessor {
                             incidentObject.getString("status"))
             );
         }
-        collections.add(incidentObject, "incidents");
+        collections.addTo(incidentObject, "incidents");
         updateLogEntries(Incident.find(i));
     }
 

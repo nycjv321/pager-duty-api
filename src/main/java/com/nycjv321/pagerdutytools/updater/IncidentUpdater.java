@@ -1,8 +1,8 @@
 package com.nycjv321.pagerdutytools.updater;
 
 import com.mongodb.*;
-import com.nycjv321.pagerdutytools.utils.Collections;
 import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
+import com.nycjv321.pagerdutytools.utils.Collections;
 
 import java.util.Objects;
 
@@ -38,7 +38,7 @@ public class IncidentUpdater implements Updater {
             BasicDBObject noteInstance = (BasicDBObject) noteInstances.get(x);
             NoteUpdater noteUpdater = new NoteUpdater(db, incident);
             noteUpdater.update(noteInstance);
-            collections.add(noteInstance, "notes"); // make this bulk op?
+            collections.addTo(noteInstance, "notes"); // make this bulk op?
         }
     }
 
@@ -98,7 +98,7 @@ public class IncidentUpdater implements Updater {
         );
 
         if (Objects.isNull(serviceObject)) {
-            collections.add(service, "services");
+            collections.addTo(service, "services");
         }
         Object serviceId = service.get("_id");
         incident.remove("service");

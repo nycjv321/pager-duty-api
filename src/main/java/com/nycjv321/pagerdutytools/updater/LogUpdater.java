@@ -4,9 +4,9 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.nycjv321.pagerdutytools.utils.Collections;
 import com.nycjv321.pagerdutytools.models.Incident;
 import com.nycjv321.pagerdutytools.models.User;
+import com.nycjv321.pagerdutytools.utils.Collections;
 import org.bson.types.ObjectId;
 
 import java.util.Objects;
@@ -63,7 +63,7 @@ public class LogUpdater implements Updater {
             if (channel.get("type").equals("email")) {
                 channel.remove("type");
                 channel.put("incident_id", incidentId);
-                collections.add(channel, "emails");
+                collections.addTo(channel, "emails");
                 logInstance.put("email_id", collections.retrieve("emails").findOne(
                         new BasicDBObject("raw_url", new BasicDBObject("$eq", channel.getString("raw_url")))
                 ).get("_id"));
@@ -80,7 +80,7 @@ public class LogUpdater implements Updater {
                 channel.remove("type");
                 DBObject foundNote = findNote(channel);
                 if (Objects.isNull(foundNote)) {
-                    collections.add(channel, "notes");
+                    collections.addTo(channel, "notes");
                     foundNote = findNote(channel);
                 }
                 logInstance.put("note_id", foundNote.get("_id"));
