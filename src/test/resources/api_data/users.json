@@ -1,0 +1,43 @@
+{
+  "users": [
+    {
+      "id": "PP1565R",
+      "name": "John Smith",
+      "email": "john@example.com",
+      "time_zone": "Eastern Time (US & Canada)",
+      "color": "grey20",
+      "role": "user",
+      "avatar_url": "https://secure.gravatar.com/avatar/2e32280905f296791ed387cd0f61ec6b.png?d=mm&r=PG",
+      "user_url": "/users/PP1565R",
+      "invitation_sent": true
+    },
+    {
+      "id": "PT23IWX",
+      "name": "Tim Wright",
+      "email": "tim@acme.com",
+      "time_zone": "Eastern Time (US & Canada)",
+      "color": "purple",
+      "role": "owner",
+      "avatar_url": "https://secure.gravatar.com/avatar/923a2b907dc04244e9bb5576a42e70a7.png?d=mm&r=PG",
+      "user_url": "/users/PT23IWX",
+      "invitation_sent": false,
+      "marketing_opt_out": false
+    },
+    {
+      "id": "PPSFHH7",
+      "name": "Bob Smith",
+      "email": "bob@acme.com",
+      "time_zone": "Eastern Time (US & Canada)",
+      "color": "red",
+      "avatar_url": "https://secure.gravatar.com/avatar/78e9fa7d6d2ddba416ad7534eb1403d0.png?d=mm&r=PG",
+      "user_url": "/users/PPSFHH7",
+      "invitation_sent": true,
+      "marketing_opt_out": false
+    }
+  ],
+  "active_account_users": 1,
+  "limit": 25,
+  "query": "john",
+  "offset": 0,
+  "total": 1
+}

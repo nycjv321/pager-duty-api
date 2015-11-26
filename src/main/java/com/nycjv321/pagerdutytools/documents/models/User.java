@@ -1,9 +1,9 @@
-package com.nycjv321.pagerdutytools.models;
+package com.nycjv321.pagerdutytools.documents.models;
 
-import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import de.caluga.morphium.annotations.Entity;
 import de.caluga.morphium.annotations.Id;
 import de.caluga.morphium.annotations.Property;
@@ -26,7 +26,7 @@ public class User {
     private ObjectId _id;
 
     @Property(fieldName = "id")
-    private String id;
+    private String note_id;
 
     private String name;
     private String email;
@@ -46,9 +46,13 @@ public class User {
         return createQueryFor(User.class).f("email").eq(email).get();
     }
 
+    public static User find(String id) {
+        return createQueryFor(User.class).f("id").eq(id).get();
+    }
+
     public List<Incident> getIncidents() {
         if (Objects.isNull(incidents)) {
-            incidents = createQueryFor(Incident.class).f("resolved_by_user.id").eq(id).asList();
+            incidents = createQueryFor(Incident.class).f("resolved_by_user.id").eq(note_id).asList();
         }
         return incidents;
     }
@@ -62,9 +66,8 @@ public class User {
         return database.find(query).count();
     }
 
-
-    public String getId() {
-        return id;
+    public String getNoteId() {
+        return note_id;
     }
 
     public String getEmail() {
@@ -77,10 +80,6 @@ public class User {
 
     public String getJobTitle() {
         return jobTitle;
-    }
-
-    public static User find(String id) {
-        return createQueryFor(User.class).f("id").eq(id).get();
     }
 
     public ObjectId getObjectId() {

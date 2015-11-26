@@ -1,0 +1,88 @@
+{
+  "id": "Z634N7",
+  "incident_number": 3,
+  "created_on": "2012-09-11T22:54:08Z",
+  "status": "acknowledged",
+  "html_url": "https://acme.pagerduty.com/incidents/PBXG6JS",
+  "incident_key": "=?UTF-8?B?SnVzdCBhbiBlbWFpbCBmcm9tIOWvjOWjq+WxsSBhbmQg8J2EnvCdlaXwnZ+2IPCggoo=?=",
+  "pending_actions": [
+    {
+      "type": "unacknowledge",
+      "at": "2012-09-12T00:25:49Z"
+    }
+  ],
+  "service": {
+    "id": "PFRV88L",
+    "name": "Generic Email",
+    "description": "Description for Generic Email Service.",
+    "html_url": "https://acme.pagerduty.com/services/PFRV88L"
+  },
+  "assigned_to_user": {
+    "id": "PEO3O45",
+    "name": "John",
+    "email": "john@acme.com",
+    "html_url": "https://acme.pagerduty.com/users/PEO3O45"
+  },
+  "assigned_to": [
+    {
+      "at": "2012-09-11T22:54:08Z",
+      "object": {
+        "id": "PEO3O45",
+        "name": "John",
+        "email": "john@acme.com",
+        "html_url": "https://acme.pagerduty.com/users/PEO3O45",
+        "type": "user"
+      }
+    },
+    {
+      "at": "2012-09-11T22:54:08Z",
+      "object": {
+        "id": "PMI6007",
+        "name": "James",
+        "email": "james@acme.com",
+        "html_url": "https://acme.pagerduty.com/users/PMI6007",
+        "type": "user"
+      }
+    }
+  ],
+  "acknowledgers": [
+    {
+      "at": "2012-09-11T22:55:01Z",
+      "object": {
+        "id": "PMI6007",
+        "name": "James",
+        "email": "james@acme.com",
+        "html_url": "https://acme.pagerduty.com/users/PMI6007",
+        "type": "user"
+      }
+    },
+    {
+      "at": "2012-09-11T22:55:32Z",
+      "object": {
+        "type": "api"
+      }
+    },
+    {
+      "at": "2012-09-11T23:25:49Z",
+      "object": {
+        "id": "PMI6007",
+        "name": "James",
+        "email": "james@acme.com",
+        "html_url": "https://acme.pagerduty.com/users/PMI6007",
+        "type": "user"
+      }
+    }
+  ],
+  "trigger_summary_data": {
+    "subject": "Just an email from 富士山 and 𝄞𝕥𝟶 𠂊"
+  },
+  "trigger_details_html_url": "https://acme.pagerduty.com/incidents/PBXG6JS/log_entries/P30IVAT",
+  "last_status_change_on": "2012-09-11T22:55:01Z",
+  "last_status_change_by": {
+    "id": "PMI6007",
+    "name": "James",
+    "email": "james@acme.com",
+    "html_url": "https://acme.pagerduty.com/users/PMI6007"
+  },
+  "urgency": "high"
+}

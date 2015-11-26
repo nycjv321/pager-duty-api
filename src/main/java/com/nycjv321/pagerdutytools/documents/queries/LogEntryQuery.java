@@ -1,6 +1,6 @@
-package com.nycjv321.pagerdutytools.models.queries;
+package com.nycjv321.pagerdutytools.documents.queries;
 
-import com.nycjv321.pagerdutytools.models.LogEntry;
+import com.nycjv321.pagerdutytools.documents.models.LogEntry;
 import com.nycjv321.pagerdutytools.utils.MongoConnector;
 
 import java.util.ArrayList;

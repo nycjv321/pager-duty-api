@@ -9,7 +9,7 @@ import java.io.IOException;
 public class RecordInitializer {
 
     private final DB db;
-    private DBOjectDownloader downloader = new DBOjectDownloader();
+    private DBObjectDownloader downloader = new DBObjectDownloader();
     private Collections collections;
 
     public RecordInitializer() {

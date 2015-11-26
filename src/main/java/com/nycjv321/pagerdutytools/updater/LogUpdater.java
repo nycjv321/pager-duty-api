@@ -4,8 +4,8 @@ import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.mongodb.DBObject;
-import com.nycjv321.pagerdutytools.models.Incident;
-import com.nycjv321.pagerdutytools.models.User;
+import com.nycjv321.pagerdutytools.documents.models.Incident;
+import com.nycjv321.pagerdutytools.documents.models.User;
 import com.nycjv321.pagerdutytools.utils.Collections;
 import org.bson.types.ObjectId;
 
@@ -29,9 +29,8 @@ public class LogUpdater implements Updater {
         storeAgent(logInstance, "agent");
         storeAgent(logInstance, "user");
         storeAgent(logInstance, "assigned_user");
-        final ObjectId incidentObjectId = incident.getObjectId();
+        final ObjectId incidentObjectId = incident.getId();
         storeEmail(logInstance, incidentObjectId);
-//        storeNote(logInstance);
         addIncidentToLogEntry(logInstance, incidentObjectId);
     }
 
@@ -62,23 +61,6 @@ public class LogUpdater implements Updater {
                 logInstance.put("email_id", collections.retrieve("emails").findOne(
                         new BasicDBObject("raw_url", new BasicDBObject("$eq", channel.getString("raw_url")))
                 ).get("_id"));
-                logInstance.remove("channel");
-
-            }
-        }
-    }
-
-    private void storeNote(BasicDBObject logInstance) {
-        if (logInstance.get("channel") != null) {
-            BasicDBObject channel = (BasicDBObject) logInstance.get("channel");
-            if (channel.get("type").equals("note")) {
-                channel.remove("type");
-                DBObject foundNote = findNote(channel);
-                if (Objects.isNull(foundNote)) {
-                    collections.add(channel, "notes");
-                    foundNote = findNote(channel);
-                }
-                logInstance.put("note_id", foundNote.get("_id"));
                 logInstance.remove("channel");
 
             }

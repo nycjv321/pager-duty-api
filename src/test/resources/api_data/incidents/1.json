@@ -1,0 +1,45 @@
+{
+  "id": "B7242X",
+  "incident_number": 1,
+  "created_on": "2012-09-11T22:49:21Z",
+  "status": "triggered",
+  "html_url": "https://acme.pagerduty.com/incidents/P2A6J96",
+  "incident_key": null,
+  "pending_actions": [
+    {
+      "type": "escalate",
+      "at": "2012-09-11T22:59:21Z"
+    }
+  ],
+  "service": {
+    "id": "PBF77WY",
+    "name": "Generic Api",
+    "description": "Description for Generic Api Service.",
+    "html_url": "https://acme.pagerduty.com/services/PBF77WY"
+  },
+  "assigned_to_user": {
+    "id": "PEO3O45",
+    "name": "John",
+    "email": "john@acme.com",
+    "html_url": "https://acme.pagerduty.com/users/PEO3O45"
+  },
+  "assigned_to": [
+    {
+      "at": "2012-09-11T22:49:21Z",
+      "object": {
+        "id": "PEO3O45",
+        "name": "John",
+        "email": "john@acme.com",
+        "html_url": "https://acme.pagerduty.com/users/PEO3O45",
+        "type": "user"
+      }
+    }
+  ],
+  "trigger_summary_data": {
+    "subject": "Opened on the web ui"
+  },
+  "trigger_details_html_url": "https://acme.pagerduty.com/incidents/P2A6J96/log_entries/P2NQP6P",
+  "last_status_change_on": "2012-09-11T22:49:21Z",
+  "last_status_change_by": null,
+  "urgency": "high"
+}

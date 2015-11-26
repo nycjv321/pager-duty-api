@@ -1,4 +1,4 @@
-package com.nycjv321.pagerdutytools.models.updater;
+package com.nycjv321.pagerdutytools.documents.updater;
 
 import com.mongodb.BasicDBObject;
 

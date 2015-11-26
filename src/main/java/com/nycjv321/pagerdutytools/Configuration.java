@@ -1,5 +1,7 @@
 package com.nycjv321.pagerdutytools;
 
+import com.google.common.base.Strings;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Objects;
@@ -14,7 +16,7 @@ public class Configuration {
 
     static {
         properties = new Properties();
-        try (InputStream resourceAsStream = Configuration.class.getResourceAsStream("/application.properties")) {
+        try (InputStream resourceAsStream = Configuration.class.getResourceAsStream(getConfigPath())) {
             if (Objects.isNull(resourceAsStream)) {
                 throw new NullPointerException("/application.properties does not exist!");
             }
@@ -24,9 +26,12 @@ public class Configuration {
         }
     }
 
+    private static String getEnvironment() {
+        return System.getProperty("pagerduty.env", "development");
+    }
 
     public static String getAuthorizationToken() {
-        return getProperty("pagerduty.rest.authorization.token");
+        return getProperty("pagerduty.rest.authorization.token", false);
     }
 
     public static String getHost() {
@@ -42,7 +47,7 @@ public class Configuration {
     }
 
     public static String getDomain() {
-        return getProperty("company.domain");
+        return getProperty("company.domain", false);
     }
 
     private static String getProperty(String property) {
@@ -58,9 +63,29 @@ public class Configuration {
         }
     }
 
+    public static String getIndexerLocation() {
+        return getProperty("solr.location");
+    }
+
+    public static String getIndexCollection() {
+        return getProperty("solr.collection");
+
+    }
+
+    private static String getConfigPath() {
+        String environment = getEnvironment();
+        if (Strings.isNullOrEmpty(environment)) {
+            return "/staging/application.properties";
+        } else {
+            return String.format("/%s/application.properties", environment);
+        }
+    }
+
+
+
     private static final class NotDefinedException extends RuntimeException {
         public NotDefinedException(String configuration) {
-            super(String.format("%s not defined in /application.properties", configuration));
+            super(String.format("%s not defined in %s", configuration, getConfigPath()));
         }
     }
 

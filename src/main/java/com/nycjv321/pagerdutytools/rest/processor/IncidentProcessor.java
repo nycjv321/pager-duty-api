@@ -2,9 +2,9 @@ package com.nycjv321.pagerdutytools.rest.processor;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
+import com.nycjv321.pagerdutytools.documents.models.Incident;
 import com.nycjv321.pagerdutytools.exceptions.UnResolvedIncidentsException;
-import com.nycjv321.pagerdutytools.models.Incident;
-import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
+import com.nycjv321.pagerdutytools.rest.DBObjectDownloader;
 import com.nycjv321.pagerdutytools.updater.IncidentUpdater;
 import com.nycjv321.pagerdutytools.updater.LogUpdater;
 import com.nycjv321.pagerdutytools.updater.NoteUpdater;
@@ -20,7 +20,7 @@ import static java.util.Objects.isNull;
 public class IncidentProcessor {
     private final DB db;
     private final IncidentUpdater incidentUpdater;
-    private DBOjectDownloader downloader = new DBOjectDownloader();
+    private DBObjectDownloader downloader = new DBObjectDownloader();
 
     private Collections collections;
 
@@ -30,12 +30,12 @@ public class IncidentProcessor {
         collections = new Collections(db);
     }
 
-    public synchronized boolean processNewIncidents() throws UnResolvedIncidentsException {
+    public synchronized boolean processResolvedIncidents() throws UnResolvedIncidentsException {
         int restCount = downloader.getIncidentCount();
         int dbCount = Incident.getCount();
         if (restCount > dbCount) {
             for (int i = dbCount + 1; i <= restCount; ++i) {
-                processNewIncident(i);
+                processIncident(i);
                 try {
                     Thread.sleep(RandomUtils.nextInt(0, 2500));
                 } catch (InterruptedException e) {
@@ -49,7 +49,7 @@ public class IncidentProcessor {
         return false;
     }
 
-    private void processNewIncident(int i) throws UnResolvedIncidentsException {
+    private void processIncident(int i) throws UnResolvedIncidentsException {
         final BasicDBObject incidentObject = downloader.getIncident(i);
         incidentUpdater.update(incidentObject);
         if (!incidentObject.getString("status").equals("resolved")) {
@@ -77,7 +77,7 @@ public class IncidentProcessor {
 
 
     private void updateLogEntries(Incident incident) {
-        BasicDBObject[] logEntries = downloader.getLogEntries(incident.getId());
+        BasicDBObject[] logEntries = downloader.getLogEntries(incident.getIncidentId());
         for (int j = 0; j < logEntries.length; ++j) {
             BasicDBObject logInstance = logEntries[j];
             if (isNull(logInstance)) {

@@ -1,10 +1,12 @@
-package com.nycjv321.pagerdutytools.models;
+package com.nycjv321.pagerdutytools.documents.models;
 
 import de.caluga.morphium.annotations.Embedded;
 import de.caluga.morphium.annotations.Entity;
 import de.caluga.morphium.annotations.Id;
 import de.caluga.morphium.annotations.caching.Cache;
 import org.bson.types.ObjectId;
+
+import static com.nycjv321.pagerdutytools.utils.MongoConnector.createQueryFor;
 
 /**
  * Created by jvelasquez on 4/16/15.
@@ -31,6 +33,10 @@ public class Service {
     private String description;
 
     public Service() {
+    }
+
+    public static Service find(ObjectId service_id) {
+        return createQueryFor(Service.class).f("_id").eq(service_id).get();
     }
 
     public String getName() {

@@ -8,7 +8,7 @@ import com.mongodb.util.JSON;
 import com.nycjv321.http.SimpleHttpClient;
 import com.nycjv321.http.SimpleHttpClientBuilder;
 import com.nycjv321.pagerdutytools.Configuration;
-import com.nycjv321.pagerdutytools.models.Incident;
+import com.nycjv321.pagerdutytools.documents.models.Incident;
 import com.nycjv321.pagerdutytools.updater.IncidentUpdater;
 import com.nycjv321.pagerdutytools.updater.LogUpdater;
 import com.nycjv321.utilities.CalendarUtilities;
@@ -25,7 +25,7 @@ import static java.util.Objects.isNull;
 /**
  * Created by jvelasquez on 11/9/15.
  */
-public class DBOjectDownloader {
+public class DBObjectDownloader {
 
     public static final Header authentication = new BasicHeader("Authorization", "Token token=" + Configuration.getAuthorizationToken());
     public static final Header contentType = new BasicHeader("Content-type", "application/json");
@@ -76,9 +76,9 @@ public class DBOjectDownloader {
         // this takes a while
         for (int i = 1; i < all.size(); ++i) {
             Incident incident = all.get(i);
-            BasicDBObject[] notes = getNotes(incident.getId());
+            BasicDBObject[] notes = getNotes(incident.getIncidentId());
             for (BasicDBObject note : notes) {
-                note.put("incident_id", incident.getObjectId());
+                note.put("incident_id", incident.getId());
             }
             noteList.addAll(Arrays.asList(notes));
         }
@@ -120,7 +120,7 @@ public class DBOjectDownloader {
             incidents.addAll(incidentList);
             offset += 100;
         }
-        return incidents.toArray(new BasicDBObject[]{});
+        return incidents.toArray(new BasicDBObject[incidents.size()]);
     }
 
     public BasicDBObject[] getUsers() {
@@ -170,7 +170,7 @@ public class DBOjectDownloader {
         for (int i = 1; i <= incidents.size(); ++i) {
 
             Incident incident = incidents.get(i - 1);
-            String incidentId = incident.getId();
+            String incidentId = incident.getIncidentId();
             BasicDBObject[] logInstances = getLogEntries(incidentId);
             LogUpdater logUpdater = new LogUpdater(db, incident);
             for (BasicDBObject logInstance : logInstances) {
@@ -186,7 +186,7 @@ public class DBOjectDownloader {
                 throw new RuntimeException(e);
             }
         }
-        return logEntries.toArray(new BasicDBObject[]{});
+        return logEntries.toArray(new BasicDBObject[logEntries.size()]);
     }
 
     public int getIncidentCount() {

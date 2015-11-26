@@ -1,14 +1,17 @@
-package com.nycjv321.pagerdutytools.models.queries;
+package com.nycjv321.pagerdutytools.documents.queries;
 
 import com.google.common.collect.Lists;
-import com.nycjv321.pagerdutytools.models.User;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.nycjv321.pagerdutytools.utils.*;
+import com.nycjv321.pagerdutytools.documents.models.User;
+import com.nycjv321.pagerdutytools.utils.MongoConnector;
+import com.nycjv321.pagerdutytools.utils.MongoQueryFilters;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 /**

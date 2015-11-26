@@ -2,14 +2,10 @@ package com.nycjv321.pagerdutytools.updater;
 
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
-import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
-import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
 import com.nycjv321.pagerdutytools.utils.Collections;
 
 import java.util.Objects;
-
-import static java.util.Objects.isNull;
 
 /**
  * Created by jvelasquez on 11/9/15.
@@ -17,7 +13,6 @@ import static java.util.Objects.isNull;
 public class IncidentUpdater implements Updater {
     private final DB db;
     private Collections collections;
-    private DBOjectDownloader downloader = new DBOjectDownloader();
 
     public IncidentUpdater(DB db) {
         this.db = db;
@@ -33,65 +28,68 @@ public class IncidentUpdater implements Updater {
     }
 
     private void updateLastStatusChangeBy(BasicDBObject incident) {
-        BasicDBObject user = (BasicDBObject) incident.get("last_status_change_by");
-        if (isNull(user)) {
-            return;
-        }
-        Object userId = db.getCollection("users").findOne(
-                new BasicDBObject("id", new BasicDBObject("$eq", user.getString("id")))
-        ).get("_id");
-        incident.remove("last_status_change_by");
-        incident.put("last_status_change_by_id", userId);
+        update(
+                incident,
+                "users",
+                "last_status_change_by",
+                "id",
+                "last_status_change_by_id"
+        );
     }
 
     private void updateResolvedByUser(BasicDBObject incident) {
-        BasicDBObject user = (BasicDBObject) incident.get("resolved_by_user");
-        if (isNull(user)) {
-            return;
-        }
-
-        Object userId;
-        DBCollection users = db.getCollection("users");
-        try {
-            userId = users.findOne(
-                    new BasicDBObject("id", new BasicDBObject("$eq", user.getString("id")))
-            ).get("_id");
-        } catch (NullPointerException e) {
-            user.put("active", false);
-            users.insert(user);
-            userId = users.findOne(
-                    new BasicDBObject("id", new BasicDBObject("$eq", user.getString("id")))
-            ).get("_id");
-        }
-        incident.remove("resolved_by_user");
-        incident.put("resolved_by_user_id", userId);
+        update(
+                incident,
+                "users",
+                "resolved_by_user",
+                "id",
+                "resolved_by_user_id"
+        );
     }
 
     private void updateIncidentAssignedToUser(BasicDBObject incident) {
-        BasicDBObject assignedToUser = (BasicDBObject) incident.get("assigned_to_user");
-        if (isNull(assignedToUser)) {
-            return;
-        }
-        Object userId = db.getCollection("users").findOne(
-                new BasicDBObject("id", new BasicDBObject("$eq", assignedToUser.getString("id")))
-        ).get("_id");
-        incident.remove("assigned_to_user");
-        incident.put("assigned_to_user_id", userId);
+        update(
+                incident,
+                "users",
+                "assigned_to_user",
+                "id",
+                "assigned_to_user_id"
+        );
 
     }
 
-    private void updateIncidentService(BasicDBObject incident) {
-        BasicDBObject service = (BasicDBObject) incident.get("service");
-        final DBObject serviceObject = db.getCollection("services").findOne(
-                new BasicDBObject("id", new BasicDBObject("$eq", service.getString("id")))
+
+    void updateIncidentService(BasicDBObject incident) {
+        update(
+                incident,
+                "services",
+                "service",
+                "id",
+                "service_id"
+        );
+    }
+
+
+    void update(BasicDBObject parent, String collectionName, String objectToUpdate, String objectKey, String objectIdentifier) {
+        BasicDBObject child = (BasicDBObject) parent.get(objectToUpdate);
+
+        if (Objects.isNull(child)) {
+            return;
+        }
+
+        DBObject queriedChild = db.getCollection(collectionName).findOne(
+                new BasicDBObject(objectKey, new BasicDBObject("$eq", child.getString(objectKey)))
         );
 
-        if (Objects.isNull(serviceObject)) {
-            collections.add(service, "services");
+        if (Objects.isNull(queriedChild)) {
+            collections.add(child, collectionName);
+            queriedChild = db.getCollection(collectionName).findOne(
+                    new BasicDBObject(objectKey, new BasicDBObject("$eq", child.getString(objectKey)))
+            );
         }
-        Object serviceId = service.get("_id");
-        incident.remove("service");
-        incident.put("service_id", serviceId);
+        Object objectId = queriedChild.get("_id");
+        parent.remove(objectToUpdate);
+        parent.put(objectIdentifier, objectId);
 
     }
 
