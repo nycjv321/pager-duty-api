@@ -24,7 +24,7 @@ public class EndPoints {
         return url + HttpQueryParameterBuilder.build(parameters);
     }
 
-    public static String notes(int id) {
+    public static String notes(String id) {
         return incidents(ImmutableMap.of()) + id + "/notes/";
     }
 

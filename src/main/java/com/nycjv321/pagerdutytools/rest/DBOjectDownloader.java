@@ -18,9 +18,7 @@ import org.apache.http.message.BasicHeader;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static java.util.Objects.isNull;
 
@@ -31,8 +29,8 @@ public class DBOjectDownloader {
 
     public static final Header authentication = new BasicHeader("Authorization", "Token token=" + Configuration.getAuthorizationToken());
     public static final Header contentType = new BasicHeader("Content-type", "application/json");
-    private CalendarUtilities calendarUtilities = new CalendarUtilities("yyyy-MM-dd");
     private static final SimpleHttpClient httpClient = SimpleHttpClientBuilder.create().build();
+    private CalendarUtilities calendarUtilities = new CalendarUtilities("yyyy-MM-dd");
 
     public BasicDBObject getIncident(int i) {
         String json = httpClient.get(EndPoints.incident(i), contentType, authentication);
@@ -42,51 +40,63 @@ public class DBOjectDownloader {
         return data;
     }
 
-    public BasicDBList getLogEntries(String incidentId) {
+    public BasicDBObject[] getLogEntries(String incidentId) {
         String json = httpClient.get(
                 EndPoints.logEntries(incidentId), contentType, authentication);
 
         BasicDBObject data = (BasicDBObject) JSON.parse(json);
 
-        // insert user translation
-        assert data != null;
-        return (BasicDBList) data.get("log_entries");
+
+        if (Objects.isNull(data)) {
+            return new BasicDBObject[]{};
+        } else {
+            BasicDBList log_entries = (BasicDBList) data.get("log_entries");
+            if (Objects.isNull(log_entries)) {
+                return new BasicDBObject[]{};
+            } else {
+                return log_entries.toArray(new BasicDBObject[]{});
+            }
+        }
     }
 
 
-    public BasicDBList getNotes(int id) {
+    public BasicDBObject[] getNotes(String id) {
         String json = httpClient.get(EndPoints.notes(id), contentType, authentication);
 
         BasicDBObject data = (BasicDBObject) JSON.parse(json);
         assert data != null;
 
-        return (BasicDBList) data.get("notes");
+        return ((BasicDBList) data.get("notes")).toArray(new BasicDBObject[]{});
     }
 
 
-    public BasicDBList getNotes() {
-        int incidents = Incident.all().size();
-        BasicDBList notes = new BasicDBList();
+    public BasicDBObject[] getNotes() {
+        List<Incident> all = Incident.all();
+        List<BasicDBObject> noteList = new ArrayList<>();
         // this takes a while
-        for (int i = 1; i <= incidents; ++i) {
-            BasicDBList noteInstances = getNotes(i);
-            notes.addAll(noteInstances);
+        for (int i = 1; i < all.size(); ++i) {
+            Incident incident = all.get(i);
+            BasicDBObject[] notes = getNotes(incident.getId());
+            for (BasicDBObject note : notes) {
+                note.put("incident_id", incident.getObjectId());
+            }
+            noteList.addAll(Arrays.asList(notes));
         }
-        return notes;
+        return noteList.toArray(new BasicDBObject[]{});
     }
 
 
-    public BasicDBList getServices() {
+    public BasicDBObject[] getServices() {
         BasicDBList services = new BasicDBList();
         String json = httpClient.get(EndPoints.services(), contentType, authentication);
         BasicDBObject data = (BasicDBObject) JSON.parse(json);
         // insert user translation
         assert data != null;
         services.addAll((BasicDBList) data.get("services"));
-        return services;
+        return services.toArray(new BasicDBObject[]{});
     }
 
-    public BasicDBList getIncidents(DB db) {
+    public BasicDBObject[] getIncidents(DB db) {
         BasicDBList incidents = new BasicDBList();
         int expectedIncidents = getIncidentCount();
         int offset = 0;
@@ -110,10 +120,10 @@ public class DBOjectDownloader {
             incidents.addAll(incidentList);
             offset += 100;
         }
-        return incidents;
+        return incidents.toArray(new BasicDBObject[]{});
     }
 
-    public BasicDBList getUsers() {
+    public BasicDBObject[] getUsers() {
         BasicDBList users = new BasicDBList();
         String json = httpClient.get(EndPoints.users(ImmutableMap.of("limit", "100")), contentType, authentication);
 
@@ -127,7 +137,7 @@ public class DBOjectDownloader {
         }
         users.addAll(userList);
 
-        return users;
+        return users.toArray(new BasicDBObject[]{});
     }
 
     /**
@@ -153,7 +163,7 @@ public class DBOjectDownloader {
         }
     }
 
-    public BasicDBList getLogEntries(DB db) {
+    public BasicDBObject[] getLogEntries(DB db) {
         BasicDBList logEntries = new BasicDBList();
         List<Incident> incidents = Incident.all();
         // this takes a while
@@ -161,10 +171,9 @@ public class DBOjectDownloader {
 
             Incident incident = incidents.get(i - 1);
             String incidentId = incident.getId();
-            BasicDBList logInstances = getLogEntries(incidentId);
+            BasicDBObject[] logInstances = getLogEntries(incidentId);
             LogUpdater logUpdater = new LogUpdater(db, incident);
-            for (int j = 0; j < logInstances.size(); ++j) {
-                BasicDBObject logInstance = (BasicDBObject) logInstances.get(j);
+            for (BasicDBObject logInstance : logInstances) {
                 if (isNull(logInstance)) {
                     continue;
                 }
@@ -177,7 +186,7 @@ public class DBOjectDownloader {
                 throw new RuntimeException(e);
             }
         }
-        return logEntries;
+        return logEntries.toArray(new BasicDBObject[]{});
     }
 
     public int getIncidentCount() {

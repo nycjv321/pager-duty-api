@@ -1,6 +1,9 @@
 package com.nycjv321.pagerdutytools.utils;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
 
 /**
  * Created by jvelasquez on 11/9/15.
@@ -13,16 +16,20 @@ public class Collections {
         this.db = db;
     }
 
-    public void addTo(BasicDBObject object, String collection) {
+    public void add(BasicDBObject object, String collection) {
         retrieve(collection).insert(object);
     }
 
-    public void addAll(BasicDBList list, String collection) {
-        DBCollection documents = retrieve(collection);
-        documents.insert(list);
+    public void add(BasicDBList list, String collection) {
+        retrieve(collection).insert(list);
     }
 
     public DBCollection retrieve(String collection) {
         return db.getCollection(collection);
+    }
+
+    public void add(BasicDBObject[] array, String collection) {
+        retrieve(collection).insert(array);
+
     }
 }

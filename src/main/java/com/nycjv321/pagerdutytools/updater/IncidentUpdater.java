@@ -1,6 +1,9 @@
 package com.nycjv321.pagerdutytools.updater;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DB;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
 import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
 import com.nycjv321.pagerdutytools.utils.Collections;
 
@@ -27,21 +30,7 @@ public class IncidentUpdater implements Updater {
         updateIncidentAssignedToUser(incident);
         updateResolvedByUser(incident);
         updateLastStatusChangeBy(incident);
-        updateNotes(incident);
     }
-
-
-
-    private void updateNotes(BasicDBObject incident) {
-        BasicDBList noteInstances = downloader.getNotes(incident.getInt("incident_number"));
-        for (int x = 0; x < noteInstances.size(); ++x) {
-            BasicDBObject noteInstance = (BasicDBObject) noteInstances.get(x);
-            NoteUpdater noteUpdater = new NoteUpdater(db, incident);
-            noteUpdater.update(noteInstance);
-            collections.addTo(noteInstance, "notes"); // make this bulk op?
-        }
-    }
-
 
     private void updateLastStatusChangeBy(BasicDBObject incident) {
         BasicDBObject user = (BasicDBObject) incident.get("last_status_change_by");
@@ -98,7 +87,7 @@ public class IncidentUpdater implements Updater {
         );
 
         if (Objects.isNull(serviceObject)) {
-            collections.addTo(service, "services");
+            collections.add(service, "services");
         }
         Object serviceId = service.get("_id");
         incident.remove("service");

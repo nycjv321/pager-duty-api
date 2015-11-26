@@ -24,13 +24,12 @@ public class RecordInitializer {
     }
 
     public void init() throws IOException {
-         collections.addAll(downloader.getUsers(), "users");
-         collections.addAll(downloader.getServices(), "services");
-         collections.addAll(downloader.getIncidents(db), "incidents");
-         collections.addAll(downloader.getNotes(), "notes");
+        collections.add(downloader.getUsers(), "users");
+        collections.add(downloader.getServices(), "services");
+        collections.add(downloader.getIncidents(db), "incidents");
+        collections.add(downloader.getNotes(), "notes");
 
-         collections.addAll(downloader.getLogEntries(db), "log_entries");
-        MongoConnector.close();
+        collections.add(downloader.getLogEntries(db), "log_entries");
     }
 
 

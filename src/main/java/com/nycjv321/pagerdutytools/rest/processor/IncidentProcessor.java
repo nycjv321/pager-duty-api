@@ -1,6 +1,5 @@
 package com.nycjv321.pagerdutytools.rest.processor;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DB;
 import com.nycjv321.pagerdutytools.exceptions.UnResolvedIncidentsException;
@@ -8,6 +7,7 @@ import com.nycjv321.pagerdutytools.models.Incident;
 import com.nycjv321.pagerdutytools.rest.DBOjectDownloader;
 import com.nycjv321.pagerdutytools.updater.IncidentUpdater;
 import com.nycjv321.pagerdutytools.updater.LogUpdater;
+import com.nycjv321.pagerdutytools.updater.NoteUpdater;
 import com.nycjv321.pagerdutytools.utils.Collections;
 import com.nycjv321.pagerdutytools.utils.MongoConnector;
 import org.apache.commons.lang3.RandomUtils;
@@ -60,20 +60,32 @@ public class IncidentProcessor {
                             incidentObject.getString("status"))
             );
         }
-        collections.addTo(incidentObject, "incidents");
+        collections.add(incidentObject, "incidents");
         updateLogEntries(Incident.find(i));
+        updateNotes(incidentObject);
     }
 
+    public void updateNotes(BasicDBObject incident) {
+        BasicDBObject[] noteInstances = downloader.getNotes(incident.getString("incident_number"));
+        for (int x = 0; x < noteInstances.length; ++x) {
+            BasicDBObject noteInstance = noteInstances[x];
+            NoteUpdater noteUpdater = new NoteUpdater(db, incident);
+            noteUpdater.update(noteInstance);
+            collections.add(noteInstance, "notes"); // make this bulk op?
+        }
+    }
+
+
     private void updateLogEntries(Incident incident) {
-        BasicDBList logEntries = downloader.getLogEntries(incident.getId());
-        for (int j = 0; j < logEntries.size(); ++j) {
-            BasicDBObject logInstance = (BasicDBObject) logEntries.get(j);
+        BasicDBObject[] logEntries = downloader.getLogEntries(incident.getId());
+        for (int j = 0; j < logEntries.length; ++j) {
+            BasicDBObject logInstance = logEntries[j];
             if (isNull(logInstance)) {
                 continue;
             }
             LogUpdater logUpdater = new LogUpdater(db, incident);
             logUpdater.update(logInstance);
         }
-        collections.addAll(logEntries, "log_entries");
+        collections.add(logEntries, "log_entries");
     }
 }
